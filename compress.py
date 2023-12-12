@@ -194,7 +194,7 @@ if __name__ == "__main__":
         TRG = pickle.load(file)
 
     # Set device to run model on
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    device = torch.device("mps" if torch.backends.mps.is_available() else "cpu")
 
     # Variables needed to specify loaded model
     # in tutorial this was length of vocab of input
@@ -214,7 +214,7 @@ if __name__ == "__main__":
                               dec_dropout).to(device)
 
     loaded_model = Seq2Seq(encoder_net, decoder_net)
-    loaded_model.load_state_dict(torch.load('./new-tut1-model.pt'))
+    loaded_model.load_state_dict(torch.load('./new-tut1-model.pt', map_location=torch.device("mps")))
     loaded_model.to(device)
 
     # uncompressed_sentence = "Serge Ibaka -- the Oklahoma City Thunder forward who was born in the Congo but played in Spain -- has been granted Spanish citizenship and will play for the country in EuroBasket this summer, the event where spots in the 2012 Olympics will be decided."
@@ -234,4 +234,5 @@ if __name__ == "__main__":
         with open(args.file, 'r') as file:
             for line in file:
                 compressed_sentence = translate_sentence(line.strip(), loaded_model, 1)
+                comperssed_sentence = " ".join(compressed_sentence)
                 print(compressed_sentence)
